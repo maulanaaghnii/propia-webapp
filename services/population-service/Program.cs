@@ -1,4 +1,5 @@
 using population_service.Data;
+using population_service.Services;
 using Microsoft.EntityFrameworkCore;
 
 // init
@@ -25,6 +26,9 @@ switch (provider.ToLower())
             options.UseSqlServer(connectionString));
         break;
 }
+
+// Add services to the container.
+builder.Services.AddScoped<IDenizenService, DenizenService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

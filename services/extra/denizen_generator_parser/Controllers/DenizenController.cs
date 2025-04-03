@@ -2,8 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text;
 using denizen_generator_parser.Models;
-using denizen_generator_parser.Data;
-using Microsoft.EntityFrameworkCore;
+using denizen_generator_parser.Services;
 
 namespace denizen_generator_parser.Controllers
 {
@@ -12,13 +11,15 @@ namespace denizen_generator_parser.Controllers
     public class DenizenController : ControllerBase
     {
         private readonly HttpClient _client;
-        private readonly ApplicationDbContext _context;
+        private readonly IDenizenService _denizenService;
         private readonly ILogger<DenizenController> _logger;
 
-        public DenizenController(ApplicationDbContext context, ILogger<DenizenController> logger)
+        public DenizenController(
+            IDenizenService denizenService,
+            ILogger<DenizenController> logger)
         {
             _client = new HttpClient();
-            _context = context;
+            _denizenService = denizenService;
             _logger = logger;
         }
 
@@ -33,72 +34,9 @@ namespace denizen_generator_parser.Controllers
                 if (request.EndYear < request.StartYear)
                     return BadRequest("End year must be greater than or equal to start year");
 
-                var personsList = new HashSet<object>();
-                int totalLost = 0;
-                int attempts = 0;
-                bool isServiceDown = false;
+                var (personsList, totalLost, attempts, isServiceDown) = await _denizenService.GeneratePersonsData(request);
+                string status = isServiceDown ? "service_down" : personsList.Count() == request.Quantity ? "success" : "incomplete";
 
-                string baseUrl = $"https://fakerapi.it/api/v2/persons?_birthday_start={request.StartYear}-01-01&_birthday_end={request.EndYear}-12-31";
-
-                // Terus mencoba sampai dapat jumlah data yang tepat atau service down
-                while (personsList.Count < request.Quantity && !isServiceDown)
-                {
-                    int needed = request.Quantity - personsList.Count;
-                    // Request lebih untuk mengantisipasi data tidak valid
-                    int requestQuantity = Math.Min(needed * 2, 100); // Max 100 per request untuk menghindari overload
-                    string url = $"{baseUrl}&_quantity={requestQuantity}";
-
-                    try
-                    {
-                        string response = await _client.GetStringAsync(url);
-                        var jsonDocument = JsonDocument.Parse(response);
-
-                        if (jsonDocument.RootElement.TryGetProperty("data", out JsonElement data))
-                        {
-                            foreach (var person in data.EnumerateArray())
-                            {
-                                if (!person.TryGetProperty("gender", out JsonElement genderElement))
-                                {
-                                    totalLost++;
-                                    continue;
-                                }
-
-                                string gender = genderElement.GetString()?.ToLower() ?? string.Empty;
-                                if (gender == "male" || gender == "female")
-                                {
-                                    personsList.Add(new
-                                    {
-                                        first_name = person.GetProperty("firstname").GetString(),
-                                        last_name = person.GetProperty("lastname").GetString(),
-                                        birth_date = person.GetProperty("birthday").GetString(),
-                                        gender = gender
-                                    });
-
-                                    if (personsList.Count >= request.Quantity) break;
-                                }
-                                else
-                                {
-                                    totalLost++;
-                                }
-                            }
-                        }
-                    }
-                    catch (HttpRequestException ex)
-                    {
-                        _logger.LogError(ex, "Service is down or connection issue");
-                        isServiceDown = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error fetching data from API");
-                        await Task.Delay(1000); // Tunggu sebentar sebelum retry
-                    }
-
-                    attempts++;
-                }
-
-                var status = isServiceDown ? "failed" : "success";
-                
                 // Save monitoring data
                 var monitoring = new DenizenGeneratorMonitoring
                 {
@@ -106,18 +44,16 @@ namespace denizen_generator_parser.Controllers
                     Quantity = request.Quantity.ToString(),
                     StartYear = request.StartYear.ToString(),
                     EndYear = request.EndYear.ToString(),
-                    Inserted = personsList.Count.ToString(),
+                    Inserted = personsList.Count().ToString(),
                     Loss = totalLost.ToString(),
                     Timestamps = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                     Status = status
                 };
 
                 // Hanya proses jika berhasil dapat semua data atau service down
-                if (personsList.Count == request.Quantity || isServiceDown)
+                if (personsList.Count() == request.Quantity || isServiceDown)
                 {
-                    // Simpan ke database
-                    _context.DenizenGeneratorMonitorings.Add(monitoring);
-                    await _context.SaveChangesAsync();
+                    await _denizenService.SaveMonitoringData(monitoring);
 
                     if (!isServiceDown)
                     {
@@ -139,7 +75,7 @@ namespace denizen_generator_parser.Controllers
                     status,
                     monitoring = new
                     {
-                        total_inserted = personsList.Count,
+                        total_inserted = personsList.Count(),
                         total_lost = totalLost,
                         attempts = attempts,
                         is_service_down = isServiceDown
@@ -159,10 +95,7 @@ namespace denizen_generator_parser.Controllers
         {
             try
             {
-                var monitoring = await _context.DenizenGeneratorMonitorings
-                    .OrderByDescending(m => m.Timestamps)
-                    .ToListAsync();
-
+                var monitoring = await _denizenService.GetMonitoringData();
                 return Ok(monitoring);
             }
             catch (Exception ex)

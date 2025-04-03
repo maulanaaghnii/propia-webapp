@@ -1,0 +1,71 @@
+services:
+  population-service:
+    build:
+      context: .
+      dockerfile: services/population-service/Dockerfile
+    ports:
+      - "5179:80"  # HTTP
+      - "7114:443" # HTTPS
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+    networks:
+      - propia-network
+
+  health-service:
+    build:
+      context: .
+      dockerfile: services/health-service/Dockerfile
+    ports:
+      - "5225:80"  # HTTP
+      - "7236:443" # HTTPS
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+    networks:
+      - propia-network
+
+  denizen-generator:
+    build:
+      context: .
+      dockerfile: services/extra/denizen-generator/Dockerfile
+    ports:
+      - "5208:80"  # HTTP
+      - "7146:443" # HTTPS
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+    networks:
+      - propia-network
+
+  denizen-generator-scheduler:
+    build:
+      context: .
+      dockerfile: services/extra/denizen-generator-scheduler/Dockerfile
+    ports:
+      - "5209:80"
+    environment:
+      - PYTHON_ENV=development
+    networks:
+      - propia-network
+    depends_on:
+      - denizen-generator
+
+  denizen-generator-parser:
+    build:
+      context: .
+      dockerfile: services/extra/denizen_generator_parser/Dockerfile
+    ports:
+      - "5210:80"  # HTTP
+      - "7148:443" # HTTPS
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+    networks:
+      - propia-network
+    depends_on:
+      - denizen-generator
+
+networks:
+  propia-network:
+    driver: bridge

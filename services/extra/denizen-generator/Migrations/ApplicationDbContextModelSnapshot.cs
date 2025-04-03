@@ -31,6 +31,14 @@ namespace denizen_generator.Migrations
                         .HasColumnType("varchar(20)")
                         .HasAnnotation("Relational:JsonPropertyName", "birth_date");
 
+                    b.Property<string>("BloodType")
+                        .HasColumnType("varchar(3)")
+                        .HasAnnotation("Relational:JsonPropertyName", "blood_type");
+
+                    b.Property<string>("EyeColor")
+                        .HasColumnType("varchar(3)")
+                        .HasAnnotation("Relational:JsonPropertyName", "eye_color");
+
                     b.Property<string>("FirstName")
                         .HasColumnType("varchar(100)")
                         .HasAnnotation("Relational:JsonPropertyName", "first_name");
@@ -39,9 +47,21 @@ namespace denizen_generator.Migrations
                         .HasColumnType("varchar(20)")
                         .HasAnnotation("Relational:JsonPropertyName", "gender");
 
+                    b.Property<string>("HairColor")
+                        .HasColumnType("varchar(3)")
+                        .HasAnnotation("Relational:JsonPropertyName", "hair_color");
+
+                    b.Property<string>("Handedness")
+                        .HasColumnType("varchar(1)")
+                        .HasAnnotation("Relational:JsonPropertyName", "handedness");
+
                     b.Property<string>("LastName")
                         .HasColumnType("varchar(100)")
                         .HasAnnotation("Relational:JsonPropertyName", "last_name");
+
+                    b.Property<string>("SkinColor")
+                        .HasColumnType("varchar(3)")
+                        .HasAnnotation("Relational:JsonPropertyName", "skin_color");
 
                     b.HasKey("Id");
 

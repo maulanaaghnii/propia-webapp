@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using population_service.Models;
-using population_service.Data;
+using population_service.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace population_service.Controllers
 {
@@ -12,25 +11,26 @@ namespace population_service.Controllers
     [Route("[controller]")]
     public class DenizenController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDenizenService _denizenService;
 
-        public DenizenController(ApplicationDbContext context)
+        public DenizenController(IDenizenService denizenService)
         {
-            _context = context;
+            _denizenService = denizenService;
         }
 
         // GET: /denizen
         [HttpGet]
-        public IActionResult Get()
+        public async Task<ActionResult<IEnumerable<Denizen>>> GetAsync()
         {
-            return Ok(new { data = _context.Denizens.ToList()});
+            var denizens = await _denizenService.GetAllDenizensAsync();
+            return Ok(new { data = denizens });
         }
 
         // GET: /denizen/{id}
         [HttpGet("{id}")]
-        public ActionResult<Denizen> Get(string id)
+        public async Task<ActionResult<Denizen>> GetAsync(string id)
         {
-            var denizen = _context.Denizens.Find(id);
+            var denizen = await _denizenService.GetDenizenByIdAsync(id);
             if (denizen == null)
                 return NotFound();
 
@@ -39,40 +39,35 @@ namespace population_service.Controllers
 
         // POST: /denizen
         [HttpPost]
-        public async Task<ActionResult<object>> Post([FromBody] object body)
+        public async Task<ActionResult<object>> PostAsync([FromBody] JsonElement body)
         {
             try
             {
-                if (body is JsonElement element)
+                if (body.ValueKind == JsonValueKind.Array)
                 {
-                    if (element.ValueKind == JsonValueKind.Array)
-                    {
-                        // Handle array input
-                        var denizens = JsonSerializer.Deserialize<List<Denizen>>(element.GetRawText());
-                        if (denizens == null || !denizens.Any())
-                            return BadRequest("Array cannot be empty");
+                    var denizens = JsonSerializer.Deserialize<List<Denizen>>(body.GetRawText());
+                    if (denizens == null || !denizens.Any())
+                        return BadRequest("Array cannot be empty");
 
-                        foreach (var denizen in denizens)
-                        {
-                            denizen.Id = Guid.NewGuid().ToString();
-                            _context.Denizens.Add(denizen);
-                        }
-                        await _context.SaveChangesAsync();
-                        return Ok(new { message = $"{denizens.Count} records created", data = denizens });
-                    }
-                    else if (element.ValueKind == JsonValueKind.Object)
+                    var createdDenizens = new List<Denizen>();
+                    foreach (var denizen in denizens)
                     {
-                        // Handle single object input
-                        var denizen = JsonSerializer.Deserialize<Denizen>(element.GetRawText());
-                        if (denizen == null)
-                            return BadRequest("Invalid denizen object");
-
-                        denizen.Id = Guid.NewGuid().ToString();
-                        _context.Denizens.Add(denizen);
-                        await _context.SaveChangesAsync();
-                        return CreatedAtAction(nameof(Get), new { id = denizen.Id }, denizen);
+                        var createdDenizen = await _denizenService.CreateDenizenAsync(denizen);
+                        createdDenizens.Add(createdDenizen);
                     }
+
+                    return Ok(new { message = $"{createdDenizens.Count} records created", data = createdDenizens });
                 }
+                else if (body.ValueKind == JsonValueKind.Object)
+                {
+                    var denizen = JsonSerializer.Deserialize<Denizen>(body.GetRawText());
+                    if (denizen == null)
+                        return BadRequest("Invalid denizen object");
+
+                    var createdDenizen = await _denizenService.CreateDenizenAsync(denizen);
+                    return CreatedAtAction(nameof(GetAsync), new { id = createdDenizen.Id }, createdDenizen);
+                }
+
                 return BadRequest("Invalid input format. Must be either an object or array of objects");
             }
             catch (JsonException ex)
@@ -87,29 +82,26 @@ namespace population_service.Controllers
 
         // PUT: /denizen/{id}
         [HttpPut("{id}")]
-        public IActionResult Put(string id, [FromBody] Denizen denizen)
+        public async Task<IActionResult> PutAsync(string id, [FromBody] Denizen denizen)
         {
-            var existingDenizen = _context.Denizens.Find(id);
-            if (existingDenizen == null)
-                return NotFound();
+            if (id != denizen.Id)
+                return BadRequest();
 
-            denizen.Id = id;
-            _context.Entry(existingDenizen).CurrentValues.SetValues(denizen);
-            _context.SaveChanges();
+            var success = await _denizenService.UpdateDenizenAsync(id, denizen);
+            if (!success)
+                return NotFound();
 
             return NoContent();
         }
 
         // DELETE: /denizen/{id}
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> DeleteAsync(string id)
         {
-            var denizen = _context.Denizens.Find(id);
-            if (denizen == null)
+            var success = await _denizenService.DeleteDenizenAsync(id);
+            if (!success)
                 return NotFound();
 
-            _context.Denizens.Remove(denizen);
-            _context.SaveChanges();
             return NoContent();
         }
     }

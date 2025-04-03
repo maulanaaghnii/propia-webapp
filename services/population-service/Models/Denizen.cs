@@ -16,21 +16,29 @@ namespace population_service.Models
         [JsonPropertyName("id")]
         public string? Id { get; set; }
         
-        [Column(TypeName = "varchar(100)")]
+        [Column("first_name", TypeName = "varchar(100)")]
         [JsonPropertyName("first_name")]
         public string? FirstName { get; set; }
         
-        [Column(TypeName = "varchar(100)")]
+        [Column("last_name", TypeName = "varchar(100)")]
         [JsonPropertyName("last_name")]
         public string? LastName { get; set; }
         
-        [Column(TypeName = "varchar(20)")]
+        [Column("birth_date", TypeName = "varchar(20)")]
         [JsonPropertyName("birth_date")]
         public string? BirthDate { get; set; }
         
-        [Column(TypeName = "varchar(20)")]
+        [Column("gender", TypeName = "varchar(20)")]
         [JsonPropertyName("gender")]
         public string? Gender { get; set; }
+        
+        [Column("blood_type", TypeName = "varchar(5)")]
+        [JsonPropertyName("blood_type")]
+        public string? BloodType { get; set; }
+
+        [Column("eye_color", TypeName = "varchar(5)")]
+        [JsonPropertyName("eye_color")]
+        public string? EyeColor { get; set; }
         
     }
 }

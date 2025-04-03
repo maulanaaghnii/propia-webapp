@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "denizen_generator_parser": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

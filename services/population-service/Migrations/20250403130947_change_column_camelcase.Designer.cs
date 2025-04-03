@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using denizen_generator.Data;
+using population_service.Data;
 
 #nullable disable
 
-namespace denizen_generator.Migrations
+namespace population_service.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250402135927_edit_tbldenizen_jsonproperty")]
-    partial class edit_tbldenizen_jsonproperty
+    [Migration("20250403130947_change_column_camelcase")]
+    partial class change_column_camelcase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace denizen_generator.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("denizen_generator.Models.Denizen", b =>
+            modelBuilder.Entity("population_service.Models.Denizen", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)")
@@ -32,18 +32,32 @@ namespace denizen_generator.Migrations
 
                     b.Property<string>("BirthDate")
                         .HasColumnType("varchar(20)")
+                        .HasColumnName("birth_date")
                         .HasAnnotation("Relational:JsonPropertyName", "birth_date");
+
+                    b.Property<string>("BloodType")
+                        .HasColumnType("varchar(5)")
+                        .HasColumnName("blood_type")
+                        .HasAnnotation("Relational:JsonPropertyName", "blood_type");
+
+                    b.Property<string>("EyeColor")
+                        .HasColumnType("varchar(5)")
+                        .HasColumnName("eye_color")
+                        .HasAnnotation("Relational:JsonPropertyName", "eye_color");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("varchar(100)")
+                        .HasColumnName("first_name")
                         .HasAnnotation("Relational:JsonPropertyName", "first_name");
 
                     b.Property<string>("Gender")
                         .HasColumnType("varchar(20)")
+                        .HasColumnName("gender")
                         .HasAnnotation("Relational:JsonPropertyName", "gender");
 
                     b.Property<string>("LastName")
                         .HasColumnType("varchar(100)")
+                        .HasColumnName("last_name")
                         .HasAnnotation("Relational:JsonPropertyName", "last_name");
 
                     b.HasKey("Id");

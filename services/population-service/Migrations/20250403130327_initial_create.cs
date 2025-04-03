@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace denizen_generator.Migrations
+namespace population_service.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initial_create : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,20 +19,17 @@ namespace denizen_generator.Migrations
                 {
                     Id = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    FirstName = table.Column<string>(type: "varchar(100)", nullable: false)
+                    FirstName = table.Column<string>(type: "varchar(100)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    LastName = table.Column<string>(type: "varchar(100)", nullable: false)
+                    LastName = table.Column<string>(type: "varchar(100)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    BirthDate = table.Column<string>(type: "varchar(20)", nullable: false)
+                    BirthDate = table.Column<string>(type: "varchar(20)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Gender = table.Column<string>(type: "varchar(20)", nullable: false)
+                    Gender = table.Column<string>(type: "varchar(20)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Race = table.Column<string>(type: "varchar(50)", nullable: false)
+                    BloodType = table.Column<string>(type: "varchar(5)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Class = table.Column<string>(type: "varchar(50)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Level = table.Column<int>(type: "int", nullable: false),
-                    Background = table.Column<string>(type: "text", nullable: false)
+                    EyeColor = table.Column<string>(type: "varchar(5)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>

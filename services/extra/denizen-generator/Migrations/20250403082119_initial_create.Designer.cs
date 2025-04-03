@@ -2,17 +2,20 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using population_service.Data;
+using denizen_generator.Data;
 
 #nullable disable
 
-namespace population_service.Migrations
+namespace denizen_generator.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250403082119_initial_create")]
+    partial class initial_create
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,7 +24,7 @@ namespace population_service.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("population_service.Models.Denizen", b =>
+            modelBuilder.Entity("denizen_generator.Models.Denizen", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)")
@@ -29,33 +32,39 @@ namespace population_service.Migrations
 
                     b.Property<string>("BirthDate")
                         .HasColumnType("varchar(20)")
-                        .HasColumnName("birth_date")
                         .HasAnnotation("Relational:JsonPropertyName", "birth_date");
 
                     b.Property<string>("BloodType")
-                        .HasColumnType("varchar(5)")
-                        .HasColumnName("blood_type")
+                        .HasColumnType("varchar(3)")
                         .HasAnnotation("Relational:JsonPropertyName", "blood_type");
 
                     b.Property<string>("EyeColor")
-                        .HasColumnType("varchar(5)")
-                        .HasColumnName("eye_color")
+                        .HasColumnType("varchar(3)")
                         .HasAnnotation("Relational:JsonPropertyName", "eye_color");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("varchar(100)")
-                        .HasColumnName("first_name")
                         .HasAnnotation("Relational:JsonPropertyName", "first_name");
 
                     b.Property<string>("Gender")
                         .HasColumnType("varchar(20)")
-                        .HasColumnName("gender")
                         .HasAnnotation("Relational:JsonPropertyName", "gender");
+
+                    b.Property<string>("HairColor")
+                        .HasColumnType("varchar(3)")
+                        .HasAnnotation("Relational:JsonPropertyName", "hair_color");
+
+                    b.Property<string>("Handedness")
+                        .HasColumnType("varchar(1)")
+                        .HasAnnotation("Relational:JsonPropertyName", "handedness");
 
                     b.Property<string>("LastName")
                         .HasColumnType("varchar(100)")
-                        .HasColumnName("last_name")
                         .HasAnnotation("Relational:JsonPropertyName", "last_name");
+
+                    b.Property<string>("SkinColor")
+                        .HasColumnType("varchar(3)")
+                        .HasAnnotation("Relational:JsonPropertyName", "skin_color");
 
                     b.HasKey("Id");
 

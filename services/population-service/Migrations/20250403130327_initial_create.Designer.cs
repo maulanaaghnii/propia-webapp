@@ -11,7 +11,7 @@ using population_service.Data;
 namespace population_service.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250402142956_initial_create")]
+    [Migration("20250403130327_initial_create")]
     partial class initial_create
     {
         /// <inheritdoc />
@@ -20,9 +20,9 @@ namespace population_service.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.13")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("population_service.Models.Denizen", b =>
                 {
@@ -33,6 +33,14 @@ namespace population_service.Migrations
                     b.Property<string>("BirthDate")
                         .HasColumnType("varchar(20)")
                         .HasAnnotation("Relational:JsonPropertyName", "birth_date");
+
+                    b.Property<string>("BloodType")
+                        .HasColumnType("varchar(5)")
+                        .HasAnnotation("Relational:JsonPropertyName", "blood_type");
+
+                    b.Property<string>("EyeColor")
+                        .HasColumnType("varchar(5)")
+                        .HasAnnotation("Relational:JsonPropertyName", "eye_color");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("varchar(100)")

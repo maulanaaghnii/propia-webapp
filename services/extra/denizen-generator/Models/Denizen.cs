@@ -32,15 +32,25 @@ namespace denizen_generator.Models
         [JsonPropertyName("gender")]
         public string? Gender { get; set; }
         
-        // [Column(TypeName = "varchar(50)")]
-        // public string? Race { get; set; }
-        
-        // [Column(TypeName = "varchar(50)")]
-        // public string? Class { get; set; }
-        
-        // public int Level { get; set; }
-        
-        // [Column(TypeName = "text")]
-        // public string? Background { get; set; }
+        [Column(TypeName = "varchar(3)")]
+        [JsonPropertyName("blood_type")]
+        public string? BloodType { get; set; }
+
+        [Column(TypeName = "varchar(3)")]
+        [JsonPropertyName("eye_color")]
+        public string? EyeColor { get; set; }
+
+        [Column(TypeName = "varchar(3)")]
+        [JsonPropertyName("hair_color")]
+        public string? HairColor { get; set; }
+
+        [Column(TypeName = "varchar(3)")]
+        [JsonPropertyName("skin_color")]
+        public string? SkinColor { get; set; }
+
+        [Column(TypeName = "varchar(1)")]
+        [JsonPropertyName("handedness")]
+        public string? Handedness { get; set; }
+
     }
 }
