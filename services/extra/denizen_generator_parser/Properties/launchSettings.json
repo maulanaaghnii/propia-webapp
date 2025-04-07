@@ -2,7 +2,9 @@
   "profiles": {
     "denizen_generator_parser": {
       "commandName": "Project",
+      "dotnetRunMessages": true,
       "launchBrowser": true,
+      "applicationUrl": "http://localhost:47002",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using population_service.Data;
 
@@ -10,9 +11,11 @@ using population_service.Data;
 namespace population_service.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250403135249_add_birthtime")]
+    partial class add_birthtime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,7 +31,7 @@ namespace population_service.Migrations
                         .HasAnnotation("Relational:JsonPropertyName", "id");
 
                     b.Property<string>("BirthDate")
-                        .HasColumnType("varchar(12)")
+                        .HasColumnType("varchar(20)")
                         .HasColumnName("birth_date")
                         .HasAnnotation("Relational:JsonPropertyName", "birth_date");
 
@@ -38,17 +41,17 @@ namespace population_service.Migrations
                         .HasAnnotation("Relational:JsonPropertyName", "birth_time");
 
                     b.Property<string>("BloodType")
-                        .HasColumnType("varchar(3)")
+                        .HasColumnType("varchar(5)")
                         .HasColumnName("blood_type")
                         .HasAnnotation("Relational:JsonPropertyName", "blood_type");
 
                     b.Property<string>("EyeColor")
-                        .HasColumnType("varchar(3)")
+                        .HasColumnType("varchar(5)")
                         .HasColumnName("eye_color")
                         .HasAnnotation("Relational:JsonPropertyName", "eye_color");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("first_name")
                         .HasAnnotation("Relational:JsonPropertyName", "first_name");
 
@@ -58,17 +61,12 @@ namespace population_service.Migrations
                         .HasAnnotation("Relational:JsonPropertyName", "gender");
 
                     b.Property<string>("Handedness")
-                        .HasColumnType("varchar(1)")
+                        .HasColumnType("varchar(5)")
                         .HasColumnName("handedness")
                         .HasAnnotation("Relational:JsonPropertyName", "handedness");
 
-                    b.Property<string>("IsDelete")
-                        .HasColumnType("varchar(1)")
-                        .HasColumnName("is_delete")
-                        .HasAnnotation("Relational:JsonPropertyName", "is_delete");
-
                     b.Property<string>("LastName")
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("last_name")
                         .HasAnnotation("Relational:JsonPropertyName", "last_name");
 

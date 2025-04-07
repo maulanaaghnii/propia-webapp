@@ -19,8 +19,8 @@ def run_service():
             subprocess.run(batch_file, shell=True, capture_output=True)
 
         # Tunggu 15 detik sebelum menjalankan yang berikutnya
-        time.sleep(15)
-
+        # time.sleep(15)
+        time.sleep(3)
         # Periksa apakah ada file baru yang ditambahkan
         existing_files = set(batch_files)
         all_files = {f for f in os.listdir() if f.endswith(".bat")}

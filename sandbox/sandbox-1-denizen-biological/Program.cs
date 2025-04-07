@@ -1,41 +1,21 @@
-﻿using System;
+using System;
 
 class Program
 {
-    static Random random = new Random();
-    
-    static void Main()
+    private static Random random = new Random();
+
+    static string GetRandomTime()
     {
-        Console.WriteLine(GenerateBloodType());
+        int hours = random.Next(0, 24);
+        int minutes = random.Next(0, 60);
+        int seconds = random.Next(0, 60);
+        
+        return $"{hours:D2}{minutes:D2}{seconds:D2}";
     }
 
-    static string GenerateBloodType()
+    static void Main(string[] args)
     {
-        // Distribusi golongan darah sesuai persentase global
-        (string bloodType, double probability)[] bloodDistribution =
-        {
-            ("O+", 40),
-            ("A+", 30),
-            ("B+", 10),
-            ("AB+", 4),
-            ("O-", 4),
-            ("A-", 3),
-            ("B-", 2),
-            ("AB-", 1)
-        };
-        
-        double randValue = random.NextDouble() * 100; // Nilai antara 0-100
-        double cumulative = 0;
-        
-        foreach (var (blood, probability) in bloodDistribution)
-        {
-            cumulative += probability;
-            if (randValue < cumulative)
-            {
-                return blood;
-            }
-        }
-        
-        return bloodDistribution[^1].bloodType; // Selalu mengembalikan nilai valid
+        string time = GetRandomTime();
+        Console.WriteLine(time);
     }
 }

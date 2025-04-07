@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -16,18 +17,24 @@ namespace denizen_generator_parser.Services
         private readonly ILogger<DenizenService> _logger;
         private readonly IBloodTypeService _bloodTypeService;
         private readonly IEyeColorService _eyeColorService;
+        private readonly IHandednessService _handednessService;
+        private readonly IBirthTimeService _birthTimeService;
 
         public DenizenService(
             ApplicationDbContext context,
             ILogger<DenizenService> logger,
             IBloodTypeService bloodTypeService,
-            IEyeColorService eyeColorService)
+            IEyeColorService eyeColorService,
+            IHandednessService handednessService,
+            IBirthTimeService birthTimeService)
         {
             _client = new HttpClient();
             _context = context;
             _logger = logger;
             _bloodTypeService = bloodTypeService;
             _eyeColorService = eyeColorService;
+            _handednessService = handednessService;
+            _birthTimeService = birthTimeService;
         }
 
         public async Task<(IEnumerable<object> Data, int TotalLost, int Attempts, bool IsServiceDown)> GeneratePersonsData(GenerateRequest request)
@@ -61,7 +68,13 @@ namespace denizen_generator_parser.Services
                             }
 
                             string gender = genderElement.GetString()?.ToLower() ?? string.Empty;
-                            if (gender == "male" || gender == "female")
+                            int _gender = gender switch
+                            {
+                                "male" => 1,
+                                "female" => 2,
+                                _ => 0
+                            };
+                            if (_gender != 0)
                             {
                                 string? bloodType = person.TryGetProperty("blood_type", out JsonElement bloodTypeElement) 
                                     ? bloodTypeElement.GetString() 
@@ -71,6 +84,9 @@ namespace denizen_generator_parser.Services
                                     ? eyeColorElement.GetString()
                                     : _eyeColorService.GenerateEyeColor();
 
+                                string handedness = _handednessService.GenerateHandedness();
+                                string birthTime = _birthTimeService.GenerateBirthTime();
+
                                 personsList.Add(new
                                 {
                                     first_name = person.GetProperty("firstname").GetString(),
@@ -78,7 +94,10 @@ namespace denizen_generator_parser.Services
                                     birth_date = person.GetProperty("birthday").GetString(),
                                     gender = gender,
                                     blood_type = bloodType,
-                                    eye_color = eyeColor
+                                    eye_color = eyeColor,
+                                    handedness = handedness,
+                                    birth_time = birthTime,
+                                    is_delete = "0"
                                 });
 
                                 if (personsList.Count >= request.Quantity)

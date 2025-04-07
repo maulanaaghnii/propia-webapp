@@ -12,6 +12,7 @@ namespace denizen_generator_parser.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+            DenizenGeneratorMonitorings = Set<DenizenGeneratorMonitoring>();
         }
 
         public DbSet<DenizenGeneratorMonitoring> DenizenGeneratorMonitorings { get; set; }

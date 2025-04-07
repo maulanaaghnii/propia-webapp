@@ -46,6 +46,8 @@ catch (Exception ex)
 // Register Services
 builder.Services.AddScoped<IBloodTypeService, BloodTypeService>();
 builder.Services.AddScoped<IEyeColorService, EyeColorService>();
+builder.Services.AddScoped<IHandednessService, HandednessService>();
+builder.Services.AddScoped<IBirthTimeService, BirthTimeService>();
 builder.Services.AddScoped<IDenizenService, DenizenService>();
 
 // Configure CORS
